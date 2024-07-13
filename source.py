@@ -17,91 +17,107 @@ def calculate_averages(input_file_name, output_file_name):
     with open(output_file_name, "w") as csvwriter:
         csv.writer(csvwriter).writerows(l3)
         csvwriter.close()
-def calculate_sorted_averages(input_file_name, output_file_name): 
+def calculate_sorted_averages(input_file_name, output_file_name):
     with open(input_file_name, "r") as csvreader:
         read = csv.reader(csvreader)
-        averages = []
-        users = []
-        quarterfinal_list = []
-        final_list = []
-        indexes = []
         dictionary = {}
-        dictionary2 = {}
+        sorted_averages = []
         for line in read:
-            # import only numbers
-            numbers = line[1:]
-            # conver string to float
-            float_numbers = []
-            for number in numbers:
-                float_numbers.append(float(number))
-            # import users
-            users.append(line[0])
-            # computing average
-            average = mean(float_numbers)
-            averages.append(average)
-            # generate dictionary
+            scores = []
+            for a in range(1, len(line)):
+                scores.append(float(line[a]))
+            average = []
+            average = mean(scores)
+            sorted_averages.append(average)
             dictionary[line[0]] = str(average)
-            dictionary2[str(average)] = line[0]
-        #  a program for repeat
-        repeats = []
-        for search in averages:
-            if averages.count(search) > 1:
-                count = 0
-                for repetition in range(0,averages.count(search)):
-                    index = averages.index(search,count)
-                    repeats.append(users[index])
-                    count = index+1
-        repeats.sort()
-        for char in repeats:
-            for a in range(1, repeats.count(char)):
-                repeats.remove(char)
-        averages.sort()
-        for b in range(0,len(averages)):
-            averages[b] = str(averages[b])
-        for f in repeats:
-            indexes.append(averages.index(dictionary[f]))
-        numbers_of_c = []
-        for g in range(0, len(dictionary)):
-            numbers_of_c.append(g)
-        for c in numbers_of_c:
-            if c in indexes:
-                for d in range(0,indexes.count(c)):
-                    quarterfinal_list.append(repeats.pop(indexes.index(c)))
-                for h in range(c+1, c+indexes.count(c)):
-                    numbers_of_c.remove(h)
-            else:
-                quarterfinal_list.append(dictionary2[averages[c]])
-        for i in range(0,len(quarterfinal_list)):
+    averages = list(dictionary.values())
+    users = list(dictionary.keys())
+    sorted_averages.sort()
+    for j in range(0, len(sorted_averages)):
+        sorted_averages[j]= str(sorted_averages[j])
+    for c in sorted_averages:
+        for d in range(1,sorted_averages.count(c)):
+            sorted_averages.remove(c)
+    final_list = []
+    final_users = []
+    for char in sorted_averages:
+        l1 = []
+        count = 0
+        for e in range(0,averages.count(char)):
+            l1.append(users[averages.index(char, count)])
+            average_index = averages.index(char,count)
+            count = average_index + 1
+        l1.sort()
+        final_users.extend(l1)
+        for f in range(0, len(l1)):
             semifinal_list = []
-            semifinal_list.append(quarterfinal_list[i])
-            semifinal_list.append(averages[i])
+            semifinal_list.append(l1[f])
+            semifinal_list.append(char)
             final_list.append(semifinal_list)
     with open(output_file_name, "w") as csvwriter:
         csv.writer(csvwriter).writerows(final_list)
         csvwriter.close()
-    return(quarterfinal_list, averages)
+    return(final_users, averages)
 def calculate_three_best(input_file_name, output_file_name):
-    last_calculate = calculate_sorted_averages(input_file_name,output_file_name)
+    with open(input_file_name, "r") as csvreader:
+        read = csv.reader(csvreader)
+        dictionary = {}
+        sorted_averages = []
+        for line in read:
+            scores = []
+            for a in range(1, len(line)):
+                scores.append(float(line[a]))
+            average = []
+            average = mean(scores)
+            sorted_averages.append(average)
+            dictionary[line[0]] = str(average)
+    averages = list(dictionary.values())
+    users = list(dictionary.keys())
+    sorted_averages.sort()
+    for j in range(0, len(sorted_averages)):
+        sorted_averages[j]= str(sorted_averages[j])
+    for c in sorted_averages:
+        for d in range(1,sorted_averages.count(c)):
+            sorted_averages.remove(c)
     final_list = []
-    users = last_calculate[0]
-    averages = last_calculate[1]
-    count_of_biggest = averages.count(averages[-1])
-    for a in range(1, 4):
+    quarterfinal_list = []
+    for g in range (1, len(sorted_averages)+1):
+        l1 = []
+        count = 0
+        for e in range(0,averages.count(sorted_averages[-g])):
+            l1.append(users[averages.index(sorted_averages[-g], count)])
+            average_index = averages.index(sorted_averages[-g],count)
+            count = average_index + 1
+        l1.sort()
+        quarterfinal_list.extend(l1)
+    for h in range(0,3):
         semifinal_list = []
-        semifinal_list.append(users[-count_of_biggest])
-        semifinal_list.append(averages[-count_of_biggest])
+        semifinal_list.append(quarterfinal_list[h])
+        semifinal_list.append(dictionary[quarterfinal_list[h]])
         final_list.append(semifinal_list)
-        count_of_biggest -= 1
     with open(output_file_name, "w") as csvwriter:
         csv.writer(csvwriter).writerows(final_list)
         csvwriter.close()
 def calculate_three_worst(input_file_name, output_file_name):
-    last_calculate = calculate_sorted_averages(input_file_name, output_file_name)
+    with open(input_file_name, "r") as csvreader:
+        read = csv.reader(csvreader)
+        dictionary = {}
+        averages = []
+        for line in read:
+            scores = []
+            for a in range(1, len(line)):
+                scores.append(float(line[a]))
+            average = []
+            average = mean(scores)
+            averages.append(average)
+            dictionary[line[0]] = str(average)
+    averages.sort()
+    for i in range(0, len(averages)):
+        averages[i] = str(averages[i])
     final_list = []
-    averages = last_calculate[1]
-    for a in range (0,3):
+    for f in range(0, 3):
         semifinal_list = []
-        semifinal_list.append(averages[a])
+        semifinal_list.append(averages[f])
         final_list.append(semifinal_list)
     with open(output_file_name, "w") as csvwriter:
         csv.writer(csvwriter).writerows(final_list)
