@@ -85,11 +85,13 @@ def calculate_three_best(input_file_name, output_file_name):
     final_list = []
     users = last_calculate[0]
     averages = last_calculate[1]
+    count_of_biggest = averages.count(averages[-1])
     for a in range(1, 4):
         semifinal_list = []
-        semifinal_list.append(users[-a])
-        semifinal_list.append(averages[-a])
+        semifinal_list.append(users[-count_of_biggest])
+        semifinal_list.append(averages[-count_of_biggest])
         final_list.append(semifinal_list)
+        count_of_biggest -= 1
     with open(output_file_name, "w") as csvwriter:
         csv.writer(csvwriter).writerows(final_list)
         csvwriter.close()
